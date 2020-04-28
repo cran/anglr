@@ -1,0 +1,256 @@
+---
+title: "Examples with anglr"
+author: "Michael D. Sumner"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 7
+vignette: >
+  %\VignetteIndexEntry{Examples with anglr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, echo=FALSE, results="asis"}
+source("setup.R")
+knitr::opts_chunk$set(rgl.newwindow = TRUE)
+set.seed(123)
+```
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>")
+rgl::par3d(windowRect = c(100, 100, 512 + 100, 512 +100))
+library(raster)
+
+```
+
+# Introduction
+
+The 'anglr' package illustrates some generalizations of GIS-y and topology tasks in R with "tables". See the [package project](https://github.com/r-gris/anglr/blob/master/README.md) for more information. 
+
+
+Get some maps and plot in 3D - in plane view, or globe view. 
+
+**NOTE:** these plots are interactive, but performance and quality will be better (for now) if run locally. 
+
+
+
+
+Set up a simple world countries data set. 
+
+```{r,eval=TRUE, webgl=TRUE}
+library(rgl)
+library(raster)
+library(sf)
+## convert to triangles and plot
+library(anglr)
+library(silicate)
+```
+
+```{r,include=FALSE,echo=FALSE}
+simpleworld <- rgeos::gBuffer(simpleworld, width = 0, byid = TRUE)
+```
+```{r}
+cmesh <- DEL(simpleworld)
+plot(cmesh)
+plot3d(cmesh)
+rglwidget()
+```
+
+
+
+```{r, eval = FALSE, webgl=TRUE}
+rgl::rgl.clear()
+
+sids <- sf::read_sf(system.file("shape/nc.shp", package="sf"))
+
+ex <- extent(sf::st_bbox(sids)[c(1, 3, 2, 4)]) + 5
+gl <- graticule::graticule(seq(xmin(ex), xmax(ex), length = 15), 
+                           seq(ymin(ex), ymax(ex), length = 8))
+
+
+## convert to triangles, but wrap onto globe then plot
+smesh <- DEL(sids)
+plot3d(globe(smesh))
+mgl <- SC(gl)
+mgl$o$color_ <- "black"
+plot3d(globe(mgl), lwd = 2, add = TRUE)
+rgl::rglwidget()
+```
+
+
+
+## Holes are (trivially) supported. 
+
+It's trivial to have *holes*, because there are no holes, we have a true surface, composed of 2D primitives (triangles). 
+
+```{r,eval=TRUE, webgl=TRUE}
+rgl::rgl.clear()
+
+library(spbabel)
+data(holey)
+
+## SpatialPolygonsDataFrame
+sph <- sp(holey)
+
+glh <- TRI(sph)
+plot(glh)
+plot3d(glh)
+rgl::rglwidget()
+```
+
+
+
+
+## Lines are supported. 
+
+
+```{r, webgl=TRUE}
+rgl::rgl.clear()
+library(dplyr)
+library(sp)
+linehouse <- as(sph, "SpatialLinesDataFrame")
+plot3d(PATH(linehouse))
+rgl::rglwidget()
+```
+
+
+
+
+## Globe lines
+
+```{r, webgl=TRUE}
+rgl::rgl.clear()
+
+lmesh <- SC(as(simpleworld, "SpatialLinesDataFrame"))
+plot3d(globe(lmesh))
+rgl::rglwidget()
+```
+
+
+
+
+
+## rgl objects
+
+Rgl mesh3d objects that use "triangle" primitives are supported. 
+
+(This is meant to be deprecated but we'll need a bit more work to create silicate models from rgl). 
+
+```{r,webgl=TRUE}
+rgl::rgl.clear()
+
+dod <- anglr(dodecahedron3d(col = "cyan"))
+octo <- anglr(translate3d(octahedron3d(col = "blue"), 6, 0, 0))
+plot(dod, col = viridis::viridis(5)[1], alpha = 0.3)
+plot(octo, col = viridis::viridis(5)[5], alpha = 0.3)
+bg3d("grey")
+rgl::rglwidget()
+```
+
+
+
+To complete the support for these rgl objects we need quads, and to allows a mix of quads and triangles in one data set (that's what `extrude3d` uses). Extrusion is a bit limiting so it's unclear how useful this is (yes it is common, though). See `rgl::extrude3d` for the most readily available method in R. 
+
+
+## Points
+
+
+And points work!  (Don't laugh, actually they don't work atm). 
+
+
+```{r, eval=FALSE}
+rgl::rgl.clear()
+
+library(anglr)
+
+mpts <- as(as(simpleworld, "SpatialLinesDataFrame"), "SpatialMultiPointsDataFrame")
+plot3d(ARC(mpts))
+rgl::view3d(theta = 25, phi = 3)
+rgl::rglwidget()
+```
+
+
+## Trips
+
+The trip package includes  a 'walrus818' data set courtesy of Anthony Fischbach.  Zoom around and see if you can find them. 
+
+
+Here we also use the *finite element* aspect of our topology 
+representation. We can forget about complicated algorithms to 
+cut and splice lines and just throw away triangles south of a chosen latitude. (Still needs work, but we've proved it works well enough. )
+
+
+Needs work: 
+
+```{r, eval=FALSE}
+rgl::rgl.clear()
+library(trip)
+library(anglr)
+data(walrus818)
+
+library(graticule)
+prj <-"+proj=laea +lon_0=0 +lat_0=90 +ellps=WGS84"
+gr <- graticule(lats = seq(40, 85, by = 5), ylim = c(35, 89.5), proj = prj)
+
+
+w <- spTransform(subset(simpleworld, coordinates(simpleworld)[,2] > 10),  prj)
+walrus <- spTransform(walrus818, prj)
+
+gr$color_ <- "black"
+rgl::par3d(windowRect = c(100, 100, 912 + 100, 912 +100))
+plot3d(SC(gr))
+w$color_ <- sample(viridis::inferno(nrow(w)))
+wmap <- TRI(w)
+tXv <- wmap$tXv %>% dplyr::inner_join(wmap$v)
+
+keep <- tibble::tibble(triangle_ = unique(tXv$triangle_[rgdal::project(as.matrix(tXv[c("x_", "y_")]), prj, inv = TRUE)[,2] > 35]))
+wmap$t <- wmap$t %>% dplyr::inner_join(keep)
+## trim by primitives
+
+## we mashed the graph and bit but it works, later we
+## can propagate the filter ...
+plot3d(wmap, specular = "black", add = TRUE)
+plot3d(SC(walrus), add = TRUE)
+um <- structure(c(0.934230506420135, 0.343760699033737, 0.0950899347662926, 
+                  0, -0.302941381931305, 0.905495941638947, -0.297159105539322, 
+                  0, -0.188255190849304, 0.24880850315094, 0.950081348419189, 0, 
+                  0, 0, 0, 1), .Dim = c(4L, 4L))
+par3d(userMatrix = um)
+rgl::rglwidget()
+```
+
+
+
+A polygon layer may be overlaid with a raster layer using the `z` argument. 
+
+```{r}
+rgl::rgl.clear()
+topo <- raster::raster(system.file("extdata", "gebco1.tif", package = "anglr"))
+poly <- subset(simpleworld, sovereignt == "India")
+prj <- "+proj=laea +lon_0=80 +lat_0=45 +datum=WGS84"
+poly_z <- anglr(poly, z = topo * 68, max_area = 0.02)
+poly_z$v[c("x_", "y_")] <- rgdal::project(as.matrix(poly_z$v[c("x_", "y_")]), prj)
+poly_z$meta$proj <- prj
+plot(poly_z)
+rgl::rglwidget()
+```
+
+A discrete transfer of `z` values can be done directly by `copy_down`. 
+
+```{r}
+data("polymesh", package = "silicate")
+rgl::rgl.clear()
+polymesh$val <- abs(polymesh$layer - 8) * 0.01
+plot3d(copy_down(TRI(polymesh), z = polymesh$val))
+rgl::rglwidget()
+
+```
+
+

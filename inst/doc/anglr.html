@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>anglr</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">anglr</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(anglr)</span></code></pre></div>
+<p>The anglr package is about <em>data structures</em> and <em>3D visualization</em>.</p>
+<p>Key aspects of data structures are:</p>
+<ul>
+<li>mesh-topology with a common vertex-pool for connected shapes.</li>
+<li>line segments.</li>
+<li>path-based geometry.</li>
+<li>triangulated surfaces.</li>
+<li>high-quality triangulations, meshes.</li>
+<li>relational vs. structural forms.</li>
+</ul>
+<p>All of these aspects are related to ease of visualization and flexibility. The anglr package extends the core <a href="https://hypertidy.github.io/silicate/">silicate data structures</a> SC, SC0, PATH, PATH0, TRI, and TRI0 with models <a href="https://hypertidy.github.io/anglr/reference/DEL.html">DEL</a>, <a href="https://hypertidy.github.io/anglr/reference/DEL0.html">DEL0</a> and <a href="https://hypertidy.github.io/anglr/reference/QUAD.html">QUAD</a>. <code>DEL()</code> and <code>DEL0()</code> provide high-quality Delaunay-constrained edge-based triangulations for a wide variety of inputs. Polygon layers can be triangulated into mesh structures while maintaining all internal shape consistency and attribute metadata. <code>QUAD()</code> provides an efficient representation of raster data, it is quite experimental and only works within a limited set of workflows in anglr.</p>
+<p>There is no single best data structure for all applications, and so as much as possible the models (SC, SC0, PATH, PATH0, TRI, TRI0, ARC, DEL, DEL0, and QUAD) are interoperable and will endeavour to maintain the input information and simply interpret it in terms of the desired format. Not all pathways are possible or sensible, but it depends on the required application and the form of the input data, so the key feature is flexibility and control.</p>
+<p>As well as the data structure models, anglr includes the following visualization functions.</p>
+<ul>
+<li>[mesh_plot()] this is a 2D graphics plot of a mesh structure (an example being a curvilinear raster, but simple polygon layers are also supported)</li>
+<li>[shade3d()] 3D surface plot from mesh</li>
+<li>[persp3d()] 3D surface plot from mesh</li>
+<li>[wire3d()] 3D line plot from mesh</li>
+<li>[dot3d()] 3D point plot from mesh</li>
+<li>[plot3d()] general 3D plot</li>
+</ul>
+<p>Each of these will attempt to convert any given input to an appropriate type, not all are sensible but we have attempted to err on the side of convenience.</p>
+<div id="print-format-of-silicateanglr-models" class="section level2">
+<h2>Print format of silicate/anglr models</h2>
+<p>Object, vertex, meta, and primitives and link tables for <em>relational models</em>.</p>
+<p>Embedded index list <code>topology_</code> for <em>structural models</em>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(anglr)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">library</span>(silicate)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co">#&gt; </span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">#&gt; Attaching package: &#39;silicate&#39;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co">#&gt; The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#&gt; </span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#&gt;     filter</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">data</span>(<span class="st">&quot;minimal_mesh&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;silicate&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="kw">DEL</span>(minimal_mesh)</span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#&gt; class       : DEL</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#&gt; type        : Primitive</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#&gt; vertices    : 14 (2-space)</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt; primitives  : 20 (2-space)</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#&gt; crs         : NA</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="kw">DEL0</span>(minimal_mesh)</span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt; class       : DEL0</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#&gt; type        : Primitive</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#&gt; vertices    : 14 (2-space)</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co">#&gt; primitives  : 15 (2-space)</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co">#&gt; crs         : NA</span></span></code></pre></div>
+<p>A triangulation preserves its original polygon identity, plotting in 2D in the obvious way.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">mesh_plot</span>(<span class="kw">DEL</span>(minimal_mesh))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAACVBMVEUaGhrm5ub///8Aez1aAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEMUlEQVR4nO3WSVIjQRAFUeD+h24zTDR0I8krh5+T3NcVoYy30tuHPe1t9gNWTyBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggKAP0Fi7y6AenZLbGizz77imZrecIbQs0imhjoDFEWwONENobaADR7kBxoe2B0kQHAGWFTgCKEp0BFBQ6BChHdAxQSugcoBDRSUARorOAAtccBtSf6Dig3gedB9SZ6ESgrjcdBhQ4pf/KD/9J89YDZL5OyWw9geZ2SmbrCTS3UzJbT6C5nZLZegLN7ZTM1hNobqdkth4gc2tRoMirqloUaB2hVYGWQVoZaAmk1YGmG20ANBdpE6B5SBsBzTHaC6gM6f2z1lMa5x9sDffwh9/v1HhK2/ijrQP6+2P3UM4AanUkmS5CE4GuftfqszNQk9BloCaheUDXv3xNoJJvW4FahOYDVQudDVT2daPP7kB1QiVADUKTgIoHXgyofKIRqF5oFaBioTKfzYBqZhqBqoVmAFUNCYRjbUC1QhOAaufafM4Aui5UDlQpNB6ofvI1gFpm24DqhNYDuiZ0LFDbdJNPndCKQBeEjgVqnW8DqhESiJ5SMXNhaxio0qdGSCB6SvnIla2rApULCURPKZ64tHVZoGKhLYEafATqLSQQPaX09rYDW+fbgYpPKR24tjUKNJDnxYCqTqkZ4q0rAlWeUjdGW5cDqj+levLp1iTQSJ7XAGo7pWn64daFgFpPaZx/sHUZoPZTmjfc3boGUJdTeiz5vTXYUJ6Dgbqd0mvRv1tnA3U8pd+qn1vnAnU9peey760TfXqf0nnfbes0oP6ndN/4uXUSUOKUwM5ZQJlTMlvHA0Xu+NgPaDDPIUCRG75OyWwdCRS54PuUzNZxQJH3/zwls3WQT+Tx/52S2ToEKPL0X6dktg4Aijz8zimZrXGgyLPvnpLZmgWKvPnRKZmtSZ/Iix+fktmaA4q899kpma0poMhrn58y/if3SiBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIOgPUC85Udm7o/oAAAAASUVORK5CYII=" /><!-- --></p>
+<p>But, because under the hood it is composed of simple primitives we can address them by separate colours.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mesh0 &lt;-<span class="st"> </span><span class="kw">DEL</span>(minimal_mesh)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">mesh_plot</span>(mesh0, <span class="dt">col =</span> viridis<span class="op">::</span><span class="kw">viridis</span>(<span class="kw">nrow</span>(mesh0<span class="op">$</span>triangle)))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The density can be controlled by setting <code>max_area</code> (other controls are available via arguments to [RTriangle::triangulate]). Note that we now have new vertices that did not exist in the original polygon layer, both internal to the surface of the polygon and along its boundary. This is the “mesh-quality” aspect mentioned above.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>mesh1 &lt;-<span class="st"> </span><span class="kw">DEL</span>(minimal_mesh, <span class="dt">max_area =</span> <span class="fl">0.01</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">mesh_plot</span>(mesh1, <span class="dt">col =</span> viridis<span class="op">::</span><span class="kw">viridis</span>(<span class="kw">nrow</span>(mesh1<span class="op">$</span>triangle)))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In the silicate package, we only have access to ear-cutting triangulations, with the <code>TRI()</code> or <code>TRI0()</code> function.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>tri0 &lt;-<span class="st"> </span><span class="kw">TRI</span>(minimal_mesh)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">mesh_plot</span>(tri0, <span class="dt">col =</span> viridis<span class="op">::</span><span class="kw">viridis</span>(<span class="kw">nrow</span>(tri0<span class="op">$</span>triangle)))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>(Note that “high” or “low” quality of a triangulation really depends on the requirements for the task, but this is a real mathematical quantity with a strong theoretical basis).</p>
+<p>For our purposes, primarily we want denser meshes because they will look better in 3D when combined with other data that varies in z as well as x-y.</p>
+</div>
+<div id="plot-3d" class="section level2">
+<h2>Plot 3D</h2>
+<p>The 3D plot functions are very flexible.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">wire3d</span>(mesh1)</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#rgl::snapshot3d(&quot;wire.png&quot;)</span></span></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,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" title="Wire 3D" alt />
+<p class="caption">wire 3d</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
