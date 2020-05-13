@@ -1,7 +1,7 @@
 Package: anglr
 Type: Package
 Title: Mesh Topology and Visualization for Spatial Data
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(person("Michael D.","Sumner", 
              role = c("aut", "cre"), 
              email ="mdsumner@gmail.com"), 
@@ -23,19 +23,21 @@ License: CC BY-NC-SA 4.0
 Depends: R (>= 3.4.0)
 Imports: crsmeta (>= 0.3.0), dplyr, gridBase, magrittr, palr, png,
         polyclip, raster, reproj (>= 0.4.2), rgl, rlang, RTriangle,
-        scales, silicate (>= 0.4.0), sp, tibble, unjoin, utils,
-        viridis,
-Suggests: covr, ggplot2, ggpolypath, graticule, knitr, purrr,
-        rmarkdown, sfheaders, testthat (>= 2.1.0), trip
+        scales, silicate (>= 0.4.0), sp, terrainmeshr, tibble, unjoin,
+        utils, viridis,
+Suggests: covr, ggplot2, graticule, knitr, purrr, rmarkdown, sfheaders,
+        testthat (>= 2.1.0), trip, gibble
 SystemRequirements: PROJ library, OpenGL and GLU Library
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
+URL: https://github.com/hypertidy/anglr
+BugReports: https://github.com/hypertidy/anglr/issues
 NeedsCompilation: no
-Packaged: 2020-04-23 20:20:31 UTC; mdsumner
+Packaged: 2020-05-13 15:42:27 UTC; michae_sum
 Author: Michael D. Sumner [aut, cre],
   Miles McBain [ctb]
 Maintainer: Michael D. Sumner <mdsumner@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-04-28 10:50:05 UTC
+Date/Publication: 2020-05-13 23:40:12 UTC

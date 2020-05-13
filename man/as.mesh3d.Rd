@@ -41,7 +41,7 @@
 
 \method{as.mesh3d}{ARC}(
   x,
-  triangles = FALSE,
+  triangles = TRUE,
   smooth = FALSE,
   normals = NULL,
   texcoords = NULL,
@@ -53,14 +53,15 @@
 
 \method{as.mesh3d}{BasicRaster}(
   x,
-  triangles = FALSE,
+  triangles = TRUE,
   smooth = FALSE,
   normals = NULL,
   texcoords = NULL,
   ...,
   keep_all = TRUE,
   image_texture = NULL,
-  meshColor = "faces"
+  meshColor = "faces",
+  max_triangles = NULL
 )
 
 \method{as.mesh3d}{QUAD}(
@@ -155,6 +156,8 @@ Texture coordinates at each vertex.
 details see \link[rgl:tmesh3d]{rgl::tmesh3d}.}
 
 \item{triangles}{for quad input types, the quads may optionally be split into triangles}
+
+\item{max_triangles}{limit on triangles to create, passed to terrainmeshr}
 }
 \value{
 a \link[rgl:mesh3d]{mesh3d object}
@@ -284,7 +287,9 @@ aspect3d(1, 1, 0.5)
 
 \donttest{
 library(rgl)
-r1 <- raster::setExtent(raster::raster(volcano), raster::extent(silicate::inlandwaters))
+## get sf extent
+ext <- sf_extent(silicate::inlandwaters)
+r1 <- raster::setExtent(raster::raster(volcano), ext)
 clear3d();shade3d(as.mesh3d(DEL(silicate::inlandwaters, max_area = 1e9), z =r1))
 aspect3d(1, 1, .2)
 

@@ -1,3 +1,16 @@
+# anglr 0.6.0
+
+* Fixed DEL0() for polygons. https://github.com/hypertidy/anglr/issues/138
+
+* Checks for alignment to dplyr 1.0.0. 
+
+* Fixed raster and new projection handling problems. 
+
+* Fixed missing github links. 
+
+* Now importing terrainmeshr, for experimental hmm support (efficient conversion
+of raster to triangles with triangle density where needed based on curvature). 
+
 # anglr 0.5.0
 
 * Fixed beginning of Description, thanks to CRAN feedback. 

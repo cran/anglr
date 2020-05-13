@@ -47,10 +47,15 @@
 #' automatically interpolated and include in the output. See the help for
 #' [RTriangle::triangulate()] for how this works via the `$PA` element.
 #'
+#' Note that for a raster input the terrainmeshr package is used to determine
+#' a sensible number of triangles based on local curvature. To avoid creating
+#' this adative mesh and use `as.mesh3d(QUAD(raster))` to get quad primitives or
+#' `as.mesh3d(QUAD(raster), triangles = TRUE)` to get triangle primitives directly
+#' from raster cells.
 #' @param x object of class [PATH0] or understood by [PATH0()]
 #' @param ... ignored
 #' @inheritParams DEL
-#'
+#' @param max_triangles limit on triangles to create, passed to terrainmeshr
 #' @return [DEL0 class][DEL0]
 #' @export
 #'
@@ -113,7 +118,7 @@ DEL0.DEL <- function(x, ..., max_area = NULL) {
 #' @name DEL0
 #' @export
 DEL0.default <- function(x, ..., max_area = NULL) {
-  DEL0(silicate::PATH0(x), ..., max_area)
+  DEL0(silicate::PATH0(x), ..., max_area = max_area)
 }
 
 #' @name DEL0
@@ -145,17 +150,19 @@ DEL0.ARC <- function(x, ..., max_area = NULL) {
 #' @name DEL0
 #' @export
 DEL0.PATH <- function(x, ..., max_area = NULL) {
-  DEL(silicate::PATH0(x), max_area = NULL)
+  DEL(silicate::PATH0(x), max_area = max_area)
 }
 #' @name DEL0
 #' @export
 DEL0.PATH0 <- function(x, ..., max_area = NULL) {
   .check_area(x$vertex$x_, x$vertex$y_, max_area)
   dots <- list(...)
+
   dots[["a"]] <- max_area
 
   #-------------------------------
   if ( all(unlist(lapply(x$object$path_, function(xa) dim(xa)[1L] == length(unique(xa$path_))), use.names = FALSE))) {
+   # print("NO")
     ## bail out with a point-triangulation
     vv <- silicate::sc_vertex(x)
 
@@ -194,16 +201,13 @@ DEL0.PATH0 <- function(x, ..., max_area = NULL) {
  vv <- zmt[["vv"]]
   dots <- zmt[["dots"]]
   cnames <- zmt[["cnames"]]
-
- # dots[["x"]] <- x
- # dots[["x"]] <- dots[["p"]]
-#  dots[["p"]] <- NULL
-
   #----------------
   ## TRIANGULATE with PATH-identity
- # RTri <- do.call(edge_RTriangle0, dots)
+
+  ## get the edges (doh!!) https://github.com/hypertidy/anglr/issues/138
+  dots$p$S <- do.call(rbind, lapply(SC0(x)$object$topology_, function(a) as.matrix(a)[, c(".vx0", ".vx1"), drop = FALSE]))
   RTri <- do.call(RTriangle::triangulate, dots)
- # x## object/path_link_triangle (path_triangle_map)
+  # x## object/path_link_triangle (path_triangle_map)
   ptm <- path_triangle_map(x, RTri)
   omap <- dplyr::bind_rows(x$object$path_)%>% dplyr::distinct(.data$object_, .data$path_)
   ptm$object_ <- omap$object_[match(ptm$path_, omap$path_)]
@@ -237,4 +241,43 @@ DEL0.PATH0 <- function(x, ..., max_area = NULL) {
     }
   }
   out
+}
+
+
+#' @name DEL0
+#' @export
+#' @importFrom raster as.matrix cellFromRowCol xFromCell yFromCell
+DEL0.BasicRaster <- function(x, ..., max_triangles = NULL) {
+  ## use [[]] to avoid the as.matrix crazy with RasterBrick
+  heightmap <- t(raster::as.matrix(x[[1L]]))[,nrow(x):1]
+  if (is.null(max_triangles)) max_triangles <- prod(dim(heightmap))/20
+  ## if missing data you have to sentinelize them
+  dosentinel <- FALSE
+  if (anyNA(heightmap)) {
+    dosentinel <- TRUE
+    sentinel <- as.integer(min(heightmap, na.rm  = TRUE) -100)
+    heightmap[is.na(heightmap)] <- sentinel
+  }
+  hmm <- terrainmeshr::triangulate_matrix(heightmap, maxTriangles = max_triangles)
+  if (dosentinel) {
+    #browser()
+    hmm <- hmm[hmm[,2] > sentinel, ]
+    bad <- table(hmm[,4]) < 3
+    if (any(bad)) {
+      hmm <- hmm[!hmm[,4] %in% as.integer(names(bad[which(bad)])), ]
+    }
+  }
+  ## remember rgl.surface is x, z, y despite names
+  cell <- raster::cellFromRowCol(x,hmm[,"z"], hmm[,"x"])
+  xyz <- cbind(x = raster::xFromCell(x, cell),
+               y = raster::yFromCell(x, cell),
+               z = hmm[, "y"])
+  topology <- tibble::tibble(.vx0 = seq(1, dim(hmm)[1], by = 3L),
+                             .vx1 = .data$.vx0 + 1L,
+                             .vx2 = .data$.vx1 + 1L)
+  meta <- tibble::tibble(proj = crsmeta::crs_proj(x), ctime = Sys.time())
+  structure(list(object = tibble(a = 1, topology_ = list(topology)),
+                 vertex = tibble::tibble(x_ = xyz[,1], y_ = xyz[,2], z_ = xyz[,3]),
+                 meta = meta),
+            class = c("TRI0", "sc"))
 }

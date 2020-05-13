@@ -11,6 +11,7 @@
 \alias{DEL0.ARC}
 \alias{DEL0.PATH}
 \alias{DEL0.PATH0}
+\alias{DEL0.BasicRaster}
 \title{Convert object to a constrained-Delaunay triangulation}
 \usage{
 DEL0(x, ..., max_area = NULL)
@@ -32,6 +33,8 @@ DEL0(x, ..., max_area = NULL)
 \method{DEL0}{PATH}(x, ..., max_area = NULL)
 
 \method{DEL0}{PATH0}(x, ..., max_area = NULL)
+
+\method{DEL0}{BasicRaster}(x, ..., max_triangles = NULL)
 }
 \arguments{
 \item{x}{object of class \link{PATH0} or understood by \code{\link[=PATH0]{PATH0()}}}
@@ -39,6 +42,8 @@ DEL0(x, ..., max_area = NULL)
 \item{...}{ignored}
 
 \item{max_area}{the maximum area of a triangle}
+
+\item{max_triangles}{limit on triangles to create, passed to terrainmeshr}
 }
 \value{
 \link[=DEL0]{DEL0 class}
@@ -64,6 +69,12 @@ For point features, the mesher unproblematically creates a triangulation in
 the convex hull of the points, any attributes names \code{z_}, \code{m_}, or \code{t_} are
 automatically interpolated and include in the output. See the help for
 \code{\link[RTriangle:triangulate]{RTriangle::triangulate()}} for how this works via the \verb{$PA} element.
+
+Note that for a raster input the terrainmeshr package is used to determine
+a sensible number of triangles based on local curvature. To avoid creating
+this adative mesh and use \code{as.mesh3d(QUAD(raster))} to get quad primitives or
+\code{as.mesh3d(QUAD(raster), triangles = TRUE)} to get triangle primitives directly
+from raster cells.
 }
 
 \section{Licensing}{

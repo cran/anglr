@@ -78,6 +78,7 @@
 #' @param x a surface-alike, a matrix, or spatial object from raster, sp, sf, trip, or silicate
 #' @param z numeric vector or raster object (see details)
 #' @inheritParams rgl::as.mesh3d.tri
+#' @param max_triangles limit on triangles to create, passed to terrainmeshr
 #' @param ... arguments collected and passed to [rgl::tmesh3d()] as the `material` argument
 #' @param image_texture an rgb object to texture the surface
 #' @param meshColor how should colours be interpreted? 'vertices' or 'faces', for more
@@ -138,7 +139,9 @@
 #'
 #' \donttest{
 #' library(rgl)
-#' r1 <- raster::setExtent(raster::raster(volcano), raster::extent(silicate::inlandwaters))
+#' ## get sf extent
+#' ext <- sf_extent(silicate::inlandwaters)
+#' r1 <- raster::setExtent(raster::raster(volcano), ext)
 #' clear3d();shade3d(as.mesh3d(DEL(silicate::inlandwaters, max_area = 1e9), z =r1))
 #' aspect3d(1, 1, .2)
 #'
@@ -163,7 +166,7 @@ as.mesh3d.TRI0 <- function(x, z,  smooth = FALSE, normals = NULL, texcoords = NU
 }
 #' @name as.mesh3d
 #' @export
-as.mesh3d.ARC <- function(x, triangles = FALSE,
+as.mesh3d.ARC <- function(x, triangles = TRUE,
                                   smooth = FALSE, normals = NULL, texcoords = NULL,
                                   ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
  as.mesh3d(DEL(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
@@ -171,16 +174,25 @@ as.mesh3d.ARC <- function(x, triangles = FALSE,
 }
 #' @name as.mesh3d
 #' @export
-as.mesh3d.BasicRaster <- function(x, triangles = FALSE,
+as.mesh3d.BasicRaster <- function(x, triangles = TRUE,
                                   smooth = FALSE, normals = NULL, texcoords = NULL,
-                                  ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
+                                  ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces",
+                                  max_triangles = NULL) {
   ## consider the case where x has 3 layers (xcrd, ycrd, zval) or we use
   ## arguments of the generic as.mesh3d(x, y, z) with 3 (or 2) separate rasters
-  as.mesh3d(QUAD(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
+  if (triangles) {
+  out <-   as.mesh3d(DEL0(x, max_triangles = max_triangles), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
             keep_all = keep_all, image_texture = image_texture, meshColor = meshColor, ...)
+  } else {
+    out <-   as.mesh3d(QUAD(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
+                       keep_all = keep_all, image_texture = image_texture, meshColor = meshColor, ...)
+
+  }
+  out
 }
 #' @name as.mesh3d
 #' @export
+#' @importFrom raster as.array
 as.mesh3d.QUAD <- function(x, triangles = FALSE,
                            smooth = FALSE, normals = NULL, texcoords = NULL,
                            ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
@@ -254,9 +266,12 @@ as.mesh3d.triangulation <- function(x, ...) {
 as.mesh3d.sfc <-function(x, triangles = FALSE,
                         smooth = FALSE, normals = NULL, texcoords = NULL,
                         ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
+ ## before we get to here we might have hit
+  ## TRI0.sfc_GEOMETRYCOLLECTION, TRI0.sfc_POLYGON, TRI0.sfc_MULTIPOLYGON
 
+  ## which check for four cornered triangles and build the mesh more directly
   ## TRI or DEL or SC?
-  as.mesh3d(DEL0(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
+  as.mesh3d(TRI0(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
             keep_all = keep_all, image_texture = image_texture, meshColor = meshColor, ...)
 }
 #' @name as.mesh3d
@@ -266,7 +281,7 @@ as.mesh3d.sf <-function(x, triangles = FALSE,
                             ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
 
   ## TRI or DEL or SC?
-  as.mesh3d(DEL0(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
+  as.mesh3d(TRI0(x[[attr(x, "sf_column")]]), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
             keep_all = keep_all, image_texture = image_texture, meshColor = meshColor, ...)
 }
 #' @name as.mesh3d
@@ -276,7 +291,7 @@ as.mesh3d.Spatial <-function(x, triangles = FALSE,
                         ..., keep_all = TRUE, image_texture = NULL, meshColor = "faces") {
 
   ## TRI or DEL or SC?
-  as.mesh3d(DEL0(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
+  as.mesh3d(TRI0(x), triangles = triangles, smooth = smooth, normals = normals, texcoords = texcoords,
             keep_all = keep_all, image_texture = image_texture, meshColor = meshColor, ...)
 }
 
