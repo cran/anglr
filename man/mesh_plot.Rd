@@ -82,8 +82,7 @@ mesh_plot(
 
 \item{add}{add to existing plot or start a new one}
 
-\item{zlim}{absolute range of data to use for colour scaling (if \code{NULL} the
-data range is used)}
+\item{zlim}{unimplemented (was used in 'quadmesh::mesh_plot')}
 
 \item{...}{passed through to \code{base::plot}}
 
@@ -107,8 +106,7 @@ The mesh may be reprojected prior to plotting using the 'crs' argument to
 define the target map projection in 'PROJ string' format. (There is no
 "reproject" function for quadmesh, this is performed directly on the x-y
 coordinates of the 'quadmesh' output). The 'col' argument are mapped to the
-inputdata as in \code{\link[graphics:image]{graphics::image()}}, and applied relative to 'zlim' if
-also supplied.
+inputdata as in \code{\link[graphics:image]{graphics::image()}}.
 
 The \code{coords} argument only applies to a raster object. The \code{crs} argument
 only applies to a spatial object that has a crs projection metadata string
@@ -124,4 +122,9 @@ the \code{crs} if that is supplied. This is modelled on the approach to
 curvilinear grid data used in the \code{angstroms} package. There the function
 \code{angstroms::romsmap()} and `angstroms::romscoords()`` are used to separate
 the complicated grid geometry from the grid data itself.
+
+If the input is a mesh3d and has a material texture image this is \emph{approximated}
+by averaging the RGB values of each primitive's corner into a constant colour
+for that face. If you would like to avoid this texture colour, set the
+'mesh3d$material$color' property to \code{NULL}.
 }

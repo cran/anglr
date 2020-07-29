@@ -1,3 +1,26 @@
+# anglr 0.7.0
+
+* Removed rgdal dependency. 
+
+* Use `dpylr::summarise()` not `tally()` to avoid dplyr warning, thanks to Romain Francois (#152). 
+
+* Bug fix (avoid warning) for degenerate dimensions with matrix input to `as.mesh3d()` (#142). 
+
+* Bug fix in triangle colouring for grids (#143). 
+
+* Now importing colourvalues to convert RGB to hex for `mesh_plot()`. 
+
+* New internal function `texture_mesh3d()` adds support to `mesh_plot()` for
+approximate face colouring based on a texture, wish of
+https://github.com/hypertidy/anglr/issues/90. Is named after
+'palr::image_raster()' etc by "what does the colouring"_"what is the output".
+Experimental.
+
+* New sp polygons data set `cst10` for exploring precision issues. 
+
+* plot3d() now works for sf POINT and MULTIPOINT (no control with
+`object$color_` but usual plot3d properties can be controlled.
+
 # anglr 0.6.0
 
 * Fixed DEL0() for polygons. https://github.com/hypertidy/anglr/issues/138

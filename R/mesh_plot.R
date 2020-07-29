@@ -23,8 +23,7 @@
 #' define the target map projection in 'PROJ string' format. (There is no
 #' "reproject" function for quadmesh, this is performed directly on the x-y
 #' coordinates of the 'quadmesh' output). The 'col' argument are mapped to the
-#' inputdata as in [graphics::image()], and applied relative to 'zlim' if
-#' also supplied.
+#' inputdata as in [graphics::image()].
 #'
 #' The `coords` argument only applies to a raster object. The `crs` argument
 #' only applies to a spatial object that has a crs projection metadata string
@@ -41,12 +40,15 @@
 #' `angstroms::romsmap()` and `angstroms::romscoords()`` are used to separate
 #' the complicated grid geometry from the grid data itself.
 #'
+#' If the input is a mesh3d and has a material texture image this is _approximated_
+#' by averaging the RGB values of each primitive's corner into a constant colour
+#' for that face. If you would like to avoid this texture colour, set the
+#' 'mesh3d$material$color' property to `NULL`.
 #' @param x object to convert to mesh and plot
 #' @param crs target map projection
 #' @param col colours to use, defaults to that used by [graphics::image()]
 #' @param add add to existing plot or start a new one
-#' @param zlim absolute range of data to use for colour scaling (if `NULL` the
-#'   data range is used)
+#' @param zlim unimplemented (was used in 'quadmesh::mesh_plot')
 #' @param ... passed through to `base::plot`
 #' @param coords optional input raster of coordinates of each cell, see details
 #' @return nothing, used for the side-effect of creating or adding to a plot
@@ -57,6 +59,7 @@ mesh_plot <- function(x,  col = NULL, add = FALSE, zlim = NULL, ..., coords = NU
   UseMethod("mesh_plot")
 }
 #' @name mesh_plot
+#' @importFrom colourvalues convert_colour
 #' @export
 mesh_plot.mesh3d <-
   function (x,
@@ -67,8 +70,15 @@ mesh_plot.mesh3d <-
     if (!is.null(coords)) {
       warning("argument 'coords' is only used for 'mesh_plot(Raster)', ignoring")
     }
+
+
     if (!is.null(x$material$texture)) {
-      warning("mesh object has a texture path, but cannot be displayed in 2D graphics (try plot3d)")
+      x <- texture_mesh3d(x)
+    }
+
+    if (!is.null(crs)) {
+      xy <- try(reproj::reproj(t(x$vb[1:2, ]), crs)[,1:2], silent = TRUE)
+      if (!inherits(xy, "try-error")) x$vb[1:2, ] <- t(xy)
     }
     if (!is.null(x$ib)) {
       id <- x$ib
@@ -202,6 +212,9 @@ mesh_plot.default <- function(x,  col = NULL, add = FALSE, zlim = NULL, ...,
 #' @export
 mesh_plot.triangulation <- function(x,  col = NULL, add = FALSE, zlim = NULL, ...,
                                     coords = NULL, crs = NULL) {
-  mesh_plot(as.mesh3d(x), col = col, add = add )
+  if (!is.null(coords)) {
+    warning("argument 'coords' is only used for 'mesh_plot(Raster)', ignoring")
+  }
+  mesh_plot(as.mesh3d(x), col = col, add = add, zlim = zlim, crs = crs)
 }
 

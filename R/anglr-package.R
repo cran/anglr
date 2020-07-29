@@ -47,7 +47,12 @@
 #'   \code{\link{DEL}} \tab create a mostly-Delaunay shape-preserving constrained triangulation  \cr
 #'  }
 #'
-#' @section III. Plotting:
+#' @section Merging disparate data:
+#' \tabular{ll}{
+#'  \code{\link[anglr]{as.mesh3d}} \tab includes an `image_texture` argument to map an Raster RGB image onto surfaces \cr
+#'   \code{\link{copy_down}} \tab copy Z values (from a raster, vector field, or constant) onto the vertices of a mesh \cr
+#'  }
+#' @section Plotting:
 #'
 #' As much as possible plotting will represent the true nature of the data given.
 #'
@@ -136,6 +141,30 @@ NULL
 #   x
 # }
 
+#' Antarctic coastline
+#'
+#' Antartica features and coastline, with somewhat spurious precision.
+#'
+#' In sp format. Interesting for exploring precision issues with DEL0()
+#' see issue 7.
+#' @name cst10
+#' @docType data
+#' @examples
+#' \donttest{
+#' p <- PATH0(cst10)
+#' # DEL0(p)  ## fails as does DEL0(cst10)
+#' # fails at 14 and crashes R in DEL0() in R version 4.0.0 RC (2020-04-17 r78247) on
+#' # windows
+#' p$vertex$x_ <- signif(p$vertex$x_, 13)
+#' p$vertex$y_ <- signif(p$vertex$y_, 13)
+#' DEL0(p)
+#'
+#' ## compare 14993 unique vertices after rounding to
+#' silicate::sc_vertex(p)     ## 21875
+#'
+#' silicate::sc_vertex(cst10) ## 21875
+#' }
+"cst10"
 
 
 #' sf data frame zoo.
